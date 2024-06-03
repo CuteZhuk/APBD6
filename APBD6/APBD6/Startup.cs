@@ -1,7 +1,3 @@
-namespace APBD6;
-
-using APBD6.Data;
-
 using APBD6.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -10,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+
 public class Startup
 {
     public Startup(IConfiguration configuration)
@@ -25,7 +22,7 @@ public class Startup
             options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
         services.AddControllers();
-        
+            
         services.AddSwaggerGen(c =>
         {
             c.SwaggerDoc("v1", new OpenApiInfo { Title = "Animals API", Version = "v1" });
@@ -42,7 +39,7 @@ public class Startup
         app.UseHttpsRedirection();
         app.UseRouting();
         app.UseAuthorization();
-        
+            
         app.UseSwagger();
         app.UseSwaggerUI(c =>
         {

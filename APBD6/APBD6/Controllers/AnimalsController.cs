@@ -1,13 +1,13 @@
 namespace APBD6.Controllers;
 
 using APBD6.Data;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.EntityFrameworkCore;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
 
-[ApiController]
+    [ApiController]
     [Route("api/[controller]")]
     public class AnimalsController : ControllerBase
     {
@@ -22,14 +22,20 @@ using System.Threading.Tasks;
         public async Task<IActionResult> GetAnimals([FromQuery] string orderBy = "name")
         {
             var validColumns = new HashSet<string> { "name", "description", "category", "area" };
-            if (!validColumns.Contains(orderBy.ToLower()))
+            orderBy = orderBy.ToLowerInvariant();
+
+            if (!validColumns.Contains(orderBy))
             {
-                orderBy = "name";
+                return BadRequest("Invalid orderBy parameter. Valid values are: name, description, category, area.");
             }
 
-            var animals = await _context.Animals
-                .OrderBy(a => EF.Property<object>(a, orderBy))
-                .ToListAsync();
+            var animals = orderBy switch
+            {
+                "description" => await _context.Animals.OrderBy(a => a.Description).ToListAsync(),
+                "category" => await _context.Animals.OrderBy(a => a.Category).ToListAsync(),
+                "area" => await _context.Animals.OrderBy(a => a.Area).ToListAsync(),
+                _ => await _context.Animals.OrderBy(a => a.Name).ToListAsync(),
+            };
 
             return Ok(animals);
         }
